@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import Axios from "axios"
 
+import Navbar from 'react-bootstrap/Navbar'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card'
+
+
+
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  
+
   const [movieName, setMovieName] = useState('');
   const [review, setReview] = useState('');
   const [movieReviewList, setMovieReviewList] = useState('');
   const [newReview, setNewReview] = useState('');
 
-  useEffect(() =>{
+  useEffect(() => {
     Axios.get("http://localhost:3333/api/get").then((response) => {
       setMovieReviewList(response.data);
     });
@@ -37,43 +48,89 @@ function App() {
       movieName: movie,
       movieReview: newReview,
     });
-    setNewReview("")
+    setNewReview('')
   }
 
-  return (
-    <div className="App">
-      <h1>CRUD APPLICATION</h1>
-      <div className="form">
-        <label>Movie Name:</label>
-        <center><input type="text" name="movieName" onChange={(e) => {
-          setMovieName(e.target.value)
-        }}/></center>
-        <label>Movie Review:</label>
-        <center><input type="text" name="review" onChange={(e) => {
-          setReview(e.target.value)
-        }}/></center>
-        <center><button onClick={submitReview}>Submit</button></center>
-<center>
-  
-{movieReviewList.map((val) => {
-        return (
-        <div className="card">
-          <h3>{val.movieName}</h3>
-          <p>{val.movieReview}</p>
+  return (<>
 
-          <button onClick={() => {deleteReview(val.movieName)}}>Delete</button>
-          <input type="text" onChange={(e) => {
-            setNewReview(e.target.value)
-          }} />
-          <button onClick={() => {updateReview(val.movieName)}}>Update</button>
-        </div>
-        )
-      })}
+    <Navbar bg="dark" variant="dark">
+      <Navbar.Brand href="#home">
+        <img
+          alt=""
+          src="/logo512.png"
+          width="30"
+          height="30"
+          className="d-inline-block align-top"
+        />{' '}
+          CRUD APPLICATION
+        </Navbar.Brand>
+    </Navbar>
+    <Container fluid>
+      <Container>
+        <Row className="justify-content-md-center"><h1>CRUD APPLICATION</h1></Row>
+        <br />
 
-</center>
-      </div>
-    </div>
-    
+        <Row className="justify-content-md-center">
+
+          <Form>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Movie Name:</Form.Label>
+              <Form.Control type="text" name="movieName" onChange={(e) => {
+                setMovieName(e.target.value)
+              }} />
+            </Form.Group>
+
+            <Form.Group controlId="exampleForm.ControlTextarea1">
+              <Form.Label>Movie Review:</Form.Label>
+              <Form.Control as="textarea" rows={3} onChange={(e) => {
+                setReview(e.target.value)
+              }} />
+
+            </Form.Group>
+            <Button variant="primary" type="submit" onClick={submitReview}>
+              Submit
+  </Button>
+          </Form>
+        </Row>
+        <br />
+
+        <Row className="justify-content-md-center">
+          {
+          movieReviewList.length > 0 ? (        
+          movieReviewList.map((val) => {
+            return (
+              <Col md="auto">
+                <Card style={{ width: '18rem' }}>
+                  <Card.Body>
+                    <Card.Title>{val.movieName}</Card.Title>
+                    <Card.Text>
+                      {val.movieReview}
+                    </Card.Text>
+                    <Card.Link>
+                      <Form.Group controlId="formBasicEmail">
+                        <Form.Control type="text" onChange={(e) => {
+                          setNewReview(e.target.value)
+                        }} /><br/>
+                        <Button variant="primary" type="submit" onClick={() => { updateReview(val.movieName) }}>Update</Button>
+                      </Form.Group>
+                      <Card.Link>
+                      <Button variant="primary" type="submit" onClick={() => { deleteReview(val.movieName) }}>Delete</Button>
+                    </Card.Link>
+                    </Card.Link>
+                  </Card.Body>
+                </Card>
+                <br />
+
+              </Col>
+            )
+          })
+        
+          ): ('')
+        }
+        </Row>
+      </Container>
+    </Container>
+  </>
   );
 }
 
